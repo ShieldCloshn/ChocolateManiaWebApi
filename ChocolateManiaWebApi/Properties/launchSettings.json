@@ -20,7 +20,7 @@
     "ChocolateManiaWebApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/GetProducts",
+      "launchUrl": "api/Products",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

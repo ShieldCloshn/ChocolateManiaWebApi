@@ -8,7 +8,6 @@ namespace ChocolateManiaWebApi
     {
         public ApiDBContext(DbContextOptions<ApiDBContext> options) : base(options)
         {
-
         }
 
         public ApiDBContext()

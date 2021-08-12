@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ChocolateManiaWebApi.Models
 {
     public class Products
     {
-        public int Id { get; set; }
+        [Key]
+        public string Id { get; set; }
         public int Category { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
@@ -13,9 +15,7 @@ namespace ChocolateManiaWebApi.Models
         public bool? Handmade { get; set; } 
         public string Manufacturer { get; set; }
         public int? InStock { get; set; }
-        //через конструктор можно считать скидку для постоянных клиентов или спец. предложения
+        //TODO: Можно сделать подсчёт скидки
         public int? Discount { get; set; }
-        //сделать List особенностей
-        public int? Peculiarities { get; set; }
     }
 }
