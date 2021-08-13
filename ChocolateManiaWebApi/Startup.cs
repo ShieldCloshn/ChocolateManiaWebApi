@@ -1,3 +1,5 @@
+using ChocolateMania.Data;
+using ChocolateMania.DI.Shop;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +22,7 @@ namespace ChocolateManiaWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApiDBContext>(options => options.UseNpgsql(Configuration["ConnectionStrings:DefaultConnection"]));
+            services.AddTransient<IShop, Shop>();
 
             services.AddSwaggerGen(c =>
             {
@@ -30,7 +33,7 @@ namespace ChocolateManiaWebApi
                     Description = "Asp.net Core Web api",
                 });
             });
-
+            //Интерфейс сервиса, реализацию DI (почитать про MidleWare)
             services.AddControllers();
         }
 

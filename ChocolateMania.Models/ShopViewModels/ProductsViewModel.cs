@@ -1,8 +1,5 @@
 ﻿using ChocolateManiaWebApi.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChocolateManiaWebApi.ViewModels
 {
@@ -10,8 +7,14 @@ namespace ChocolateManiaWebApi.ViewModels
     {
         public ProductsViewModel()
         {
-            Products = new List<Products>();
         }
+
+        public ProductsViewModel(List<Products> products, int totalCount)
+        {
+            Products = products;
+            TotalCount = totalCount;
+        }
+
         public List<Products> Products { get; set; }
         public int TotalCount { get; set; }
     }
