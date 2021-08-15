@@ -6,7 +6,6 @@ using ChocolateManiaWebApi.Filters;
 using ChocolateManiaWebApi.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -93,7 +92,7 @@ namespace ChocolateMania.DI.Shop
             var deleteditem = context.Products.FirstOrDefault(t => t.Id.Equals(id));
 
             if (deleteditem == null)
-                throw new ArgumentNullException();
+                throw new DbUpdateConcurrencyException();
 
             context.Products.Remove(deleteditem);
             await context.SaveChangesAsync();
@@ -118,31 +117,6 @@ namespace ChocolateMania.DI.Shop
             {
                 throw new DbUpdateConcurrencyException();
             }
-        }
-
-        //TODO:Вынести конфигурацию маппера в отдельный класс
-        public async Task<List<SoldProductViewModel>> SoldItems(List<SoldProductViewModel> soldItems)
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<SoldProductViewModel, SoldProducts>()
-            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(scr => scr.Id))
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid().ToString())));
-
-            var mapper = new Mapper(config);
-            var products = mapper.Map<List<SoldProductViewModel>, List<SoldProducts>>(soldItems);
-
-            foreach (var product in products)
-            {
-                var currentProduct = await context.Products.FirstOrDefaultAsync(t => t.Id.Equals(product.ProductId));
-
-                if (currentProduct.InStock > 0)
-                {
-                    currentProduct.InStock--;
-                    await context.SoldProducts.AddAsync(product);
-                    await context.SaveChangesAsync();
-                }     
-            }
-
-            return soldItems;
         }
     }
 }

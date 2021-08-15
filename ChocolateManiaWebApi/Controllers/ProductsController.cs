@@ -3,7 +3,6 @@ using ChocolateMania.Models.ShopViewModels;
 using ChocolateManiaWebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChocolateManiaWebApi.Controllers
@@ -21,7 +20,6 @@ namespace ChocolateManiaWebApi.Controllers
         }
 
         //TODO: Реализовать обработку исключений
-
         [HttpGet]
         public async Task<string> GetProducts([FromQuery] GetProductsFilter filters) => JsonConvert.SerializeObject(await _shop.GetProducts(filters));
 
@@ -37,7 +35,5 @@ namespace ChocolateManiaWebApi.Controllers
         [HttpPut]
         public async Task<string> UpdateProduct([FromBody] ProductViewModel updatedProduct) => JsonConvert.SerializeObject(await _shop.UpdateProduct(updatedProduct));
 
-        [HttpPost]
-        public async Task<string> SoldProducts([FromBody] List<SoldProductViewModel> soldProducts) => JsonConvert.SerializeObject(await _shop.SoldItems(soldProducts));
     }
 }

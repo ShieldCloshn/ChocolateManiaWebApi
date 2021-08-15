@@ -1,8 +1,6 @@
-﻿using ChocolateMania.Models.ShopModels;
-using ChocolateMania.Models.ShopViewModels;
+﻿using ChocolateMania.Models.ShopViewModels;
 using ChocolateManiaWebApi.Filters;
 using ChocolateManiaWebApi.ViewModels;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ChocolateMania.DI.Shop
@@ -14,6 +12,6 @@ namespace ChocolateMania.DI.Shop
         Task<ProductViewModel> AddProduct(ProductViewModel newProduct);
         Task<bool> DeleteProduct(string id);
         Task<bool> UpdateProduct(ProductViewModel updatedProduct);
-        Task<List<SoldProductViewModel>> SoldItems(List<SoldProductViewModel> soldProducts);
+ 
     }
 }

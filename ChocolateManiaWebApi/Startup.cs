@@ -1,4 +1,5 @@
 using ChocolateMania.Data;
+using ChocolateMania.DI.Purchases;
 using ChocolateMania.DI.Reports;
 using ChocolateMania.DI.Shop;
 using Microsoft.AspNetCore.Builder;
@@ -26,6 +27,7 @@ namespace ChocolateManiaWebApi
 
             services.AddTransient<IShop, Shop>();
             services.AddTransient<IReports, Reports>();
+            services.AddTransient<IPurchases, Purchases>();
 
             services.AddSwaggerGen(c =>
             {

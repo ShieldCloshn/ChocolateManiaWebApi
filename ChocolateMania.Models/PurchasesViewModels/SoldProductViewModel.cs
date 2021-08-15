@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChocolateMania.Models.ShopViewModels
+namespace ChocolateMania.Models.PurchasesViewModels
 {
     public class SoldProductViewModel
     {
