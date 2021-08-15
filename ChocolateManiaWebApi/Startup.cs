@@ -1,4 +1,5 @@
 using ChocolateMania.Data;
+using ChocolateMania.DI.Reports;
 using ChocolateMania.DI.Shop;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +23,9 @@ namespace ChocolateManiaWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApiDBContext>(options => options.UseNpgsql(Configuration["ConnectionStrings:DefaultConnection"]));
+
             services.AddTransient<IShop, Shop>();
+            services.AddTransient<IReports, Reports>();
 
             services.AddSwaggerGen(c =>
             {

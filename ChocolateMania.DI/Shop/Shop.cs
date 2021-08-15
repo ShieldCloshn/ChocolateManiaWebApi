@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using ChocolateMania.Data;
+using ChocolateMania.Models.ShopModels;
 using ChocolateMania.Models.ShopViewModels;
 using ChocolateManiaWebApi.Filters;
-using ChocolateManiaWebApi.Models;
 using ChocolateManiaWebApi.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,12 +21,12 @@ namespace ChocolateMania.DI.Shop
             context = _context;
         }
 
-        public async Task<string> GetProducts(GetProductsFilter filters)
+        public async Task<ProductsViewModel> GetProducts(GetProductsFilter filters)
         {
             var products = context.Products.AsNoTracking();
 
             if (filters.Categories != null)
-                products = products.AsNoTracking().Where(t => filters.Categories.Contains(t.Category));
+                products = products.AsNoTracking().Where(t => filters.Categories.Contains(t.CategoryId));
 
             //TODO: Сейчас фильтрует по максимально-возможному кол-ву коллорий, можно сделать в промежутке от и до
             if ((filters.CalorieContent.HasValue))
@@ -50,55 +50,99 @@ namespace ChocolateMania.DI.Shop
 
             //TODO: сортировка по кол-ву в наличии
 
-            var result = new ProductsViewModel(await products.Skip((filters.Page - 1) * filters.Take).Take(filters.Take).ToListAsync(), await products.CountAsync());
-            return JsonConvert.SerializeObject(result);
+            var allProducts = await products.Skip((filters.Page - 1) * filters.Take).Take(filters.Take).ToListAsync();
+
+            var result = new ProductsViewModel(allProducts, await products.CountAsync());
+            return result;
         }
 
-        public async Task<string> GetProduct(string id)
+        public async Task<ProductViewModel> GetProduct(string id)
         {
-            //TODO: нужно вернуть ошибку, а не null-значение
             if (string.IsNullOrEmpty(id))
-                return null;
+                throw new ArgumentNullException();
 
             var product = await context.Products.SingleOrDefaultAsync(t => t.Id.Equals(id));
-            return JsonConvert.SerializeObject(product);
+
+            var confg = new MapperConfiguration(cfg => cfg.CreateMap<Products, ProductViewModel>());
+            var mapper = new Mapper(confg);
+            var productView = mapper.Map<Products, ProductViewModel>(product);
+
+            return productView;
         }
 
-        public async Task<string> AddProduct(Products newProduct)
+        public async Task<ProductViewModel> AddProduct(ProductViewModel newProduct)
         {
             if (newProduct != null)
             {
+                var confg = new MapperConfiguration(cfg => cfg.CreateMap<ProductViewModel, Products>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid().ToString())));
+
+                var mapper = new Mapper(confg);
+                var product = mapper.Map<ProductViewModel, Products>(newProduct);
+
                 //TODO: на уровне БД настроить проверку уникальности например по имени продукции
-                newProduct.Id = Guid.NewGuid().ToString();
-                await context.Products.AddAsync(newProduct);
+                await context.Products.AddAsync(product);
                 await context.SaveChangesAsync();
-                return JsonConvert.SerializeObject(newProduct);
+                return newProduct;
             }
-            else return null;
+            else throw new NullReferenceException();
         }
 
-        public async Task<string> DeleteProduct(string id)
+        public async Task<bool> DeleteProduct(string id)
         {
             var deleteditem = context.Products.FirstOrDefault(t => t.Id.Equals(id));
 
             if (deleteditem == null)
-                return null;
+                throw new ArgumentNullException();
 
             context.Products.Remove(deleteditem);
             await context.SaveChangesAsync();
 
-            return JsonConvert.SerializeObject(deleteditem);
+            return true;
         }
-        //AutoMapper
-        public async Task<string> UpdateProduct(ProductViewModel updatedProduct)
+
+        //Возможно лучше вернуть объект
+        public async Task<bool> UpdateProduct(ProductViewModel updatedProduct)
         {
-            var confg = new MapperConfiguration(cfg => cfg.CreateMap<ProductViewModel, Products>()
-            .ForMember(x => x.Id, y => y.UseDestinationValue()));
+            var confg = new MapperConfiguration(cfg => cfg.CreateMap<ProductViewModel, Products>());
             var mapper = new Mapper(confg);
             var product = mapper.Map<ProductViewModel, Products>(updatedProduct);
-            context.Products.Update(product);
-            await context.SaveChangesAsync();
-            return JsonConvert.SerializeObject(product);
+
+            try
+            {
+                context.Products.Update(product);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new DbUpdateConcurrencyException();
+            }
+        }
+
+        //TODO:Вынести конфигурацию маппера в отдельный класс
+        public async Task<List<SoldProductViewModel>> SoldItems(List<SoldProductViewModel> soldItems)
+        {
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<SoldProductViewModel, SoldProducts>()
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(scr => scr.Id))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid().ToString())));
+
+            var mapper = new Mapper(config);
+            var products = mapper.Map<List<SoldProductViewModel>, List<SoldProducts>>(soldItems);
+
+            foreach (var product in products)
+            {
+                var currentProduct = await context.Products.FirstOrDefaultAsync(t => t.Id.Equals(product.ProductId));
+
+                if (currentProduct.InStock > 0)
+                {
+                    currentProduct.InStock--;
+                    await context.SoldProducts.AddAsync(product);
+                    await context.SaveChangesAsync();
+                }     
+            }
+
+            return soldItems;
         }
     }
 }

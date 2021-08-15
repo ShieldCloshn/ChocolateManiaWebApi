@@ -1,6 +1,4 @@
-﻿
-
-namespace ChocolateManiaWebApi.Models
+﻿namespace ChocolateMania.Models.ShopModels
 {
     public class Categories
     {

@@ -1,4 +1,4 @@
-﻿using ChocolateManiaWebApi.Models;
+﻿using ChocolateMania.Models.ShopModels;
 using System.Collections.Generic;
 
 namespace ChocolateManiaWebApi.ViewModels
