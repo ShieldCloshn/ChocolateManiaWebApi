@@ -38,7 +38,7 @@ namespace ChocolateManiaWebApi
                     Description = "Asp.net Core Web api",
                 });
             });
-            //Интерфейс сервиса, реализацию DI (почитать про MidleWare)
+
             services.AddControllers();
         }
 

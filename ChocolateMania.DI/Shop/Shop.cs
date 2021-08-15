@@ -25,25 +25,37 @@ namespace ChocolateMania.DI.Shop
             var products = context.Products.AsNoTracking();
 
             if (filters.Categories != null)
+            {
                 products = products.AsNoTracking().Where(t => filters.Categories.Contains(t.CategoryId));
+            }
 
             //TODO: Сейчас фильтрует по максимально-возможному кол-ву коллорий, можно сделать в промежутке от и до
-            if ((filters.CalorieContent.HasValue))
+            if (filters.CalorieContent.HasValue)
+            {
                 products = products.AsNoTracking().Where(t => t.CalorieContent <= filters.CalorieContent);
+            }
 
-            if ((filters.Handmade.HasValue))
+            if (filters.Handmade.HasValue)
+            {
                 products = products.AsNoTracking().Where(t => t.Handmade.Value == filters.Handmade.Value);
+            }
 
             //TODO: Сделать фильтр не только по наличию, но и по датам возможной доставки (в наличии с:) 
             if (filters.InStock.HasValue)
+            {
                 products = products.AsNoTracking().Where(t => t.InStock > 0);
+            }
 
             //TODO: сейчас ищет просто по вхождению части названия производителя, возможно лучше реализовать так: часть названия или id поставщика
             if (!string.IsNullOrEmpty(filters?.Manufacturer))
+            {
                 products = products.AsNoTracking().Where(t => t.Manufacturer.Contains(filters.Manufacturer));
+            }
 
             if (filters.Sugarless.HasValue)
+            {
                 products = products.AsNoTracking().Where(t => t.Sugarless.Value == filters.Sugarless.Value);
+            }
 
             //TODO: Сортировка по цене
 
@@ -58,7 +70,9 @@ namespace ChocolateMania.DI.Shop
         public async Task<ProductViewModel> GetProduct(string id)
         {
             if (string.IsNullOrEmpty(id))
+            {
                 throw new ArgumentNullException();
+            }
 
             var product = await context.Products.SingleOrDefaultAsync(t => t.Id.Equals(id));
 
@@ -84,7 +98,10 @@ namespace ChocolateMania.DI.Shop
                 await context.SaveChangesAsync();
                 return newProduct;
             }
-            else throw new NullReferenceException();
+            else
+            {
+                throw new NullReferenceException();
+            }
         }
 
         public async Task<bool> DeleteProduct(string id)
@@ -92,7 +109,9 @@ namespace ChocolateMania.DI.Shop
             var deleteditem = context.Products.FirstOrDefault(t => t.Id.Equals(id));
 
             if (deleteditem == null)
+            {
                 throw new DbUpdateConcurrencyException();
+            }
 
             context.Products.Remove(deleteditem);
             await context.SaveChangesAsync();

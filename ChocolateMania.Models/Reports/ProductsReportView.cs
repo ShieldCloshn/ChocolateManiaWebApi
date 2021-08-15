@@ -13,7 +13,9 @@ namespace ChocolateMania.Models.Reports
         public bool Equals(ProductsReportView other)
         {
             if (ProductId == other.ProductId)
+            {
                 return true;
+            }
             return false;
         }
 

@@ -22,13 +22,19 @@ namespace ChocolateMania.DI.Reports
             var soldProducts = context.SoldProducts.AsNoTracking();
 
             if (!startDate.HasValue && !endDate.HasValue)
+            {
                 soldProducts = context.SoldProducts.AsNoTracking().Where(t => t.SoldDate >= DateTime.Now.AddMonths(-1));
+            }
 
             if (startDate.HasValue)
+            {
                 soldProducts = context.SoldProducts.AsNoTracking().Where(t => t.SoldDate >= startDate.Value);
+            }
 
             if (endDate.HasValue)
+            {
                 soldProducts = context.SoldProducts.AsNoTracking().Where(t => t.SoldDate <= endDate.Value);
+            }
 
             var soldProductsList = await soldProducts.Include(u => u.Product).ThenInclude(x => x.Category).ToListAsync();
             var report = new List<ProductsReportView>();
