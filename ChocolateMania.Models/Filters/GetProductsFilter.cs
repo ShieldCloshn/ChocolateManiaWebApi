@@ -10,7 +10,6 @@ namespace ChocolateManiaWebApi.Filters
         public bool? Handmade { get; set; }
         public string Manufacturer { get; set; }
         public bool? Sugarless { get; set; }
-        public List<int> Peculiarities { get; set; } 
         public List<int> Categories { get; set; }
         public double? CalorieContent { get; set; }
         public int Take { get; set; }

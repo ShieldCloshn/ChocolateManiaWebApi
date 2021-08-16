@@ -57,6 +57,11 @@ namespace ChocolateMania.DI.Shop
                 products = products.AsNoTracking().Where(t => t.Sugarless.Value == filters.Sugarless.Value);
             }
 
+            if (filters.Categories.Count > 0)
+            {
+                products = products.AsNoTracking().Where(t => filters.Categories.Contains(t.CategoryId));
+            }
+
             //TODO: Сортировка по цене
 
             //TODO: сортировка по кол-ву в наличии
